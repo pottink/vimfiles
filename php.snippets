@@ -1,0 +1,41 @@
+snippet dxclass
+<?php
+
+declare(strict_types=1);
+
+namespace ${1};
+
+/**
+ * ${2/\w+\s*/\u$0/}
+ */
+class ${2}
+{
+    /**
+     * $2 constructor
+     *
+     * ${5:@param mixed}
+     */
+    ${3:public} function __construct(${4})
+    {
+        ${0}
+    }
+}
+endsnippet
+
+snippet fc
+<?php
+
+declare(strict_types=1);
+
+namespace ${1:`!p
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`};
+
+final class ${2}
+{
+	${3}
+}
+endsnippet
