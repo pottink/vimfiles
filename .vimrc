@@ -2,6 +2,8 @@ let mapleader = ","
 
 call plug#begin()
 Plug 'airblade/vim-gitgutter'
+Plug 'ap/vim-css-color'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'dense-analysis/ale'
 Plug 'elzr/vim-json'
 Plug 'ervandew/supertab'
@@ -11,6 +13,7 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all'  }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/gv.vim'
 Plug 'junegunn/vim-easy-align'
+Plug 'kburdett/vim-nuuid'
 Plug 'kristijanhusak/deoplete-phpactor'
 Plug 'lumiliet/vim-twig'
 Plug 'Matt-Deacalion/vim-systemd-syntax', { 'for': 'service' }
@@ -29,6 +32,7 @@ Plug 'roxma/vim-hug-neovim-rpc'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'shawncplus/phpcomplete.vim'
+Plug 'sheerun/vim-polyglot'
 Plug 'Shougo/deoplete.nvim', {'tag': '5.1'}
 Plug 'SirVer/ultisnips'
 Plug 'StanAngeloff/php.vim'
@@ -201,10 +205,7 @@ nmap <silent> <leader>bun :BUN<cr>
 
 " phpdoc
 let g:pdv_template_dir = $HOME ."/.vim/bundle/pdv/templates_snip"
-nnoremap <buffer> <C-p> :call pdv#DocumentWithSnip()<CR>
-
-" Insert UUID
-nmap <Leader><Leader>U :r !uuidgen<CR>
+" nnoremap <buffer> <C-p> :call pdv#DocumentWithSnip()<CR>
 
 " ale php
 let g:ale_php_php_executable = '/usr/bin/php'
@@ -242,3 +243,7 @@ nmap <leader>su mugg/use<CR>vip:sort u<CR>:nohlsearch<CR>'u'
 " vim-cool
 let g:CoolTotalMatches = 1
 let g:AutoPairsFlyMode = 0
+
+" vim-uuid
+let g:nuuid_no_mappings = 1
+nnoremap <Leader><Leader>u <Plug>Nuuid
