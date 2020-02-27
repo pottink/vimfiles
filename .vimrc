@@ -3,12 +3,12 @@ let mapleader = ","
 call plug#begin()
 Plug 'airblade/vim-gitgutter'
 Plug 'ap/vim-css-color'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'dense-analysis/ale'
 Plug 'elzr/vim-json'
 Plug 'ervandew/supertab'
 Plug 'iyuuya/denite-ale'
 Plug 'jiangmiao/auto-pairs'
+Plug 'joonty/vim-sauce'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all'  }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/gv.vim'
@@ -33,7 +33,9 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'shawncplus/phpcomplete.vim'
 Plug 'sheerun/vim-polyglot'
-Plug 'Shougo/deoplete.nvim', {'tag': '5.1'}
+Plug 'Shougo/denite.nvim'
+Plug 'Shougo/deoplete.nvim'
+Plug 'Shougo/neomru.vim'
 Plug 'SirVer/ultisnips'
 Plug 'StanAngeloff/php.vim'
 Plug 'tobyS/pdv'
@@ -76,6 +78,15 @@ set wildmode=longest,full " command completion longest common part, then all
 
 if (!has("nvim"))
     set pyxversion=3      " use python3 first
+endif
+
+" Autostart stuff
+if has("autocmd")
+	autocmd FileType xml setlocal equalprg=xmllint\ --format\ --recover\ -\ 2>/dev/null
+	autocmd FileType json setlocal equalprg=python\ -m\ json.tool\ -\ 2>/dev/null
+    autocmd FileType php setlocal omnifunc=phpactor#Complete
+
+    autocmd FileType denite call s:denite_my_settings()
 endif
 
 " syntax
@@ -157,7 +168,6 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})"
 nmap <silent> <leader>f :FZF<cr>
 nnoremap <silent> <C-f> :FZF<cr>
-nnoremap <C-g> :Rg<Cr>
 
 " nerdtree
 map <C-P> :NERDTreeFocus<CR>:wincmd w<CR>:CtrlP<CR>
@@ -170,14 +180,15 @@ let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 let NERDTreeShowHidden = 1
 
+" easy align
+xmap ga <Plug>(EasyAlign)
+nmap :ga <Plug>(EasyAlign)
+
 " phpactor
 autocmd FileType php setlocal omnifunc=phpactor#Complete
 let g:phpactorPhpBin = '/usr/bin/php'
 let g:phpactorOmniAutoClassImport = v:true
 let g:deoplete#enable_at_startup = 1
-
-xmap ga <Plug>(EasyAlign)
-nmap :ga <Plug>(EasyAlign)
 
 nmap <Leader>u :call phpactor#UseAdd()<CR>
 nmap <Leader>mm :call phpactor#ContextMenu()<CR>
@@ -216,8 +227,9 @@ let g:ale_php_phan_executable = '/home/jelle/.composer/vendor/bin/phan'
 let g:ale_php_phpstan_executable = '/home/jelle/.composer/vendor/bin/phpstan'
 
 " Just filename in the tabline
-let g:airline#extensions#tabline#fnamemod          = ':t'
-" " Easier tab/buffer switching
+let g:airline#extensions#tabline#fnamemod = ':t'
+
+" Easier tab/buffer switching
 nmap <leader>& <Plug>AirlineSelectTab1
 nmap <leader>é <Plug>AirlineSelectTab2
 nmap <leader>" <Plug>AirlineSelectTab3
@@ -242,8 +254,60 @@ nmap <leader>su mugg/use<CR>vip:sort u<CR>:nohlsearch<CR>'u'
 
 " vim-cool
 let g:CoolTotalMatches = 1
+
+" autopair
 let g:AutoPairsFlyMode = 0
 
 " vim-uuid
 let g:nuuid_no_mappings = 1
 nnoremap <Leader><Leader>u <Plug>Nuuid
+
+" Denite
+function! s:denite_my_settings() abort
+    nnoremap <silent><buffer><expr> <CR>
+                \ denite#do_map('do_action')
+"    nnoremap <silent><buffer><expr> d
+"                \ denite#do_map('do_action', 'delete')
+"    nnoremap <silent><buffer><expr> p
+"                \ denite#do_map('do_action', 'preview')
+    nnoremap <silent><buffer><expr> q
+                \ denite#do_map('quit')
+    nnoremap <silent><buffer><expr> i
+                \ denite#do_map('open_filter_buffer')
+    nnoremap <silent><buffer><expr> <Space>
+                \ denite#do_map('toggle_select').'j'
+    nnoremap <silent><buffer><expr> <C-v>
+                \ denite#do_map('do_action', 'vsplit')
+endfunction
+
+call denite#custom#option('default', {
+            \ 'prompt': '❯'
+            \ })
+call denite#custom#var('file/rec', 'command',
+            \ ['rg', '--files', '--glob', '!.git', ''])
+call denite#custom#var('grep', 'command', ['rg'])
+call denite#custom#var('grep', 'default_opts',
+            \ ['-i', '--vimgrep', '--no-heading'])
+call denite#custom#var('grep', 'recursive_opts', [])
+call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+call denite#custom#var('grep', 'separator', ['--'])
+call denite#custom#var('grep', 'final_opts', [])
+call denite#custom#map('insert', '<Esc>', '<denite:enter_mode:normal>',
+            \'noremap')
+call denite#custom#map('normal', '<Esc>', '<NOP>',
+            \'noremap')
+"  call denite#custom#map('insert', '<C-v>', '<denite:do_action:vsplit>',
+"        \'noremap')
+"  call denite#custom#map('normal', '<C-v>', '<denite:do_action:vsplit>',
+"        \'noremap')
+call denite#custom#map('normal', 'dw', '<denite:delete_word_after_caret>',
+            \'noremap')
+call denite#custom#map('normal', '<Down>', '<denite:move_to_next_line>',
+            \'noremap')
+call denite#custom#map('normal', '<Up>', '<denite:move_to_previous_line>',
+            \'noremap')
+nnoremap <C-p> :Denite file/rec<cr>
+nnoremap <C-m> :Denite file_mru<cr>
+nnoremap <C-b> :Denite buffer<cr>
+nnoremap <C-g> :Denite grep<cr>
+nnoremap <C-s> :DeniteCursorWord grep<cr>
