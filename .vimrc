@@ -1,3 +1,5 @@
+set nocompatible
+
 let mapleader = ","
 
 call plug#begin()
@@ -7,7 +9,6 @@ Plug 'dense-analysis/ale'
 Plug 'elzr/vim-json'
 Plug 'ervandew/supertab'
 Plug 'iyuuya/denite-ale'
-Plug 'jiangmiao/auto-pairs'
 Plug 'joonty/vim-sauce'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all'  }
 Plug 'junegunn/fzf.vim'
@@ -19,18 +20,17 @@ Plug 'lumiliet/vim-twig'
 Plug 'Matt-Deacalion/vim-systemd-syntax', { 'for': 'service' }
 Plug 'matze/vim-move'
 Plug 'morhetz/gruvbox'
-Plug 'noahfrederick/vim-composer'
 Plug 'othree/html5.vim', { 'for': 'html' }
 Plug 'pangloss/vim-javascript'
 Plug 'pearofducks/ansible-vim'
-Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install', 'branch': 'master'}
+Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install --no-dev -o', 'branch': 'master'}
 Plug 'qpkorr/vim-bufkill'
 Plug 'rhysd/conflict-marker.vim'
 Plug 'romainl/vim-cool'
 Plug 'roxma/nvim-yarp'
 Plug 'roxma/vim-hug-neovim-rpc'
 Plug 'scrooloose/nerdcommenter'
-Plug 'scrooloose/nerdtree'
+Plug 'preservim/nerdtree'
 Plug 'shawncplus/phpcomplete.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'Shougo/denite.nvim'
@@ -53,6 +53,7 @@ set autoindent
 set autowrite
 set clipboard+=unnamedplus
 set colorcolumn=120       " show column 120 in different color
+set conceallevel=0        " disable json concealing
 set encoding=utf-8        " encoding
 set expandtab
 set fileencodings=utf-8,ucs-bom,cp1250,iso-8859-1
@@ -66,6 +67,7 @@ set incsearch
 set mouse=a               " add mouse support
 set noswapfile            " remove swap files
 set number                " set line numbers
+set nrformats=
 set secure
 set scrolloff=4           " keep at least 4 lines above or below the cursor
 set shiftwidth=4
@@ -86,8 +88,24 @@ if has("autocmd")
 	autocmd FileType json setlocal equalprg=python\ -m\ json.tool\ -\ 2>/dev/null
     autocmd FileType php setlocal omnifunc=phpactor#Complete
 
-    autocmd FileType denite call s:denite_my_settings()
+    " Enable text wrapping in the format options
+    au FileType gitcommit set fo+=t
+    " Force new line after 72 chars
+    au FileType gitcommit set tw=72
+    " Show vertical line at 72+1 columns
+    au FileType gitcommit set colorcolumn=+1
+    " Add extra colored vertical line at 51 columns (for title)
+    au FileType gitcommit set colorcolumn+=51
+    " Specify some indenting options
+    au FileType gitcommit set nosmartindent
+
+    au FileType denite call s:denite_my_settings()
+
+    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 endif
+
+" Save read-only files
+cmap w!! w !sudo tee % >/dev/null
 
 " syntax
 syntax on
@@ -118,6 +136,9 @@ set splitright
 set background=dark
 colorscheme gruvbox
 let g:solarized_termcolors=256
+
+" Insert UUID
+nmap <Leader><Leader>U :r !uuidgen<CR>
 
 " vim-airline
 let g:airline#extensions#ale#enabled = 1
@@ -179,6 +200,7 @@ let NERDTreeAutoDeleteBuffer = 1
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 let NERDTreeShowHidden = 1
+let NERDTreeCascadeSingleChildDir=0
 
 " easy align
 xmap ga <Plug>(EasyAlign)
@@ -255,9 +277,6 @@ nmap <leader>su mugg/use<CR>vip:sort u<CR>:nohlsearch<CR>'u'
 " vim-cool
 let g:CoolTotalMatches = 1
 
-" autopair
-let g:AutoPairsFlyMode = 0
-
 " vim-uuid
 let g:nuuid_no_mappings = 1
 nnoremap <Leader><Leader>u <Plug>Nuuid
@@ -311,3 +330,9 @@ nnoremap <C-m> :Denite file_mru<cr>
 nnoremap <C-b> :Denite buffer<cr>
 nnoremap <C-g> :Denite grep<cr>
 nnoremap <C-s> :DeniteCursorWord grep<cr>
+
+" auto format xml
+au FileType xml exe ":silent %!xmllint --format --recover - 2>/dev/null"
+
+" remap terminal normal key
+tnoremap <Leader><Leader>tn <C-W>N
