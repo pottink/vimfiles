@@ -9,6 +9,7 @@ Plug 'dense-analysis/ale'
 Plug 'elzr/vim-json'
 Plug 'ervandew/supertab'
 Plug 'iyuuya/denite-ale'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'joonty/vim-sauce'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all'  }
 Plug 'junegunn/fzf.vim'
@@ -23,20 +24,18 @@ Plug 'morhetz/gruvbox'
 Plug 'othree/html5.vim', { 'for': 'html' }
 Plug 'pangloss/vim-javascript'
 Plug 'pearofducks/ansible-vim'
-Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install --no-dev -o', 'branch': 'master'}
+Plug 'phpactor/phpactor', {'for': 'php', 'tag': '*', 'do': 'composer install --no-dev -o'}
 Plug 'qpkorr/vim-bufkill'
 Plug 'rhysd/conflict-marker.vim'
 Plug 'romainl/vim-cool'
 Plug 'roxma/nvim-yarp'
 Plug 'roxma/vim-hug-neovim-rpc'
-Plug 'scrooloose/nerdcommenter'
+Plug 'preservim/nerdcommenter'
 Plug 'preservim/nerdtree'
-Plug 'shawncplus/phpcomplete.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'Shougo/denite.nvim'
 Plug 'Shougo/deoplete.nvim'
 Plug 'Shougo/neomru.vim'
-Plug 'SirVer/ultisnips'
 Plug 'StanAngeloff/php.vim'
 Plug 'tobyS/pdv'
 Plug 'tpope/vim-abolish'
@@ -65,6 +64,7 @@ set hlsearch              " highlight search
 set history=1000          " remember 1000 history entries
 set incsearch
 set mouse=a               " add mouse support
+set nowrap                " no wrapping lines
 set noswapfile            " remove swap files
 set number                " set line numbers
 set nrformats=
@@ -72,6 +72,7 @@ set secure
 set scrolloff=4           " keep at least 4 lines above or below the cursor
 set shiftwidth=4
 set showcmd
+set showmode
 set softtabstop=4
 set tabstop=4
 set ttyfast               " send more data for redrawing
@@ -200,14 +201,13 @@ let NERDTreeAutoDeleteBuffer = 1
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 let NERDTreeShowHidden = 1
-let NERDTreeCascadeSingleChildDir=0
+let NERDTreeCascadeSingleChildDir = 0
 
 " easy align
 xmap ga <Plug>(EasyAlign)
 nmap :ga <Plug>(EasyAlign)
 
 " phpactor
-autocmd FileType php setlocal omnifunc=phpactor#Complete
 let g:phpactorPhpBin = '/usr/bin/php'
 let g:phpactorOmniAutoClassImport = v:true
 let g:deoplete#enable_at_startup = 1
@@ -242,11 +242,13 @@ let g:pdv_template_dir = $HOME ."/.vim/bundle/pdv/templates_snip"
 
 " ale php
 let g:ale_php_php_executable = '/usr/bin/php'
-let g:ale_php_phpcs_executable = '/home/jelle/.composer/vendor/bin/phpcs'
-let g:ale_php_phpmd_executable = '/home/jelle/.composer/vendor/bin/phpmd'
+let g:ale_php_phpcs_executable = '/home/jelle/.config/composer/vendor/bin/phpcs'
+let g:ale_php_phpmd_executable = '/home/jelle/.config/composer/vendor/bin/phpmd'
 let g:ale_php_langserver_executable = 'php-language-server.php'
-let g:ale_php_phan_executable = '/home/jelle/.composer/vendor/bin/phan'
-let g:ale_php_phpstan_executable = '/home/jelle/.composer/vendor/bin/phpstan'
+let g:ale_php_phan_executable = '/home/jelle/.config/composer/vendor/bin/phan'
+let g:ale_php_phpstan_executable = '/home/jelle/.config/composer/vendor/bin/phpstan --level=4'
+let g:ale_php_psalm_executable = '/home/jelle/.config/composer/vendor/bin/psalm'
+let g:ale_linters= {'php': ['php', 'psalm', 'phpstan', 'phpcs', 'phpmd']}
 
 " Just filename in the tabline
 let g:airline#extensions#tabline#fnamemod = ':t'
@@ -260,7 +262,7 @@ nmap <leader>( <Plug>AirlineSelectTab5
 nmap <leader>' <Plug>AirlineSelectTab6
 nmap <leader>è <Plug>AirlineSelectTab7
 nmap <leader>! <Plug>AirlineSelectTab8
-nmap <leader>ç <Plug>AirlineSelectTab9)
+nmap <leader>ç <Plug>AirlineSelectTab9
 
 " Move key
 let g:move_key_modifier = 'C'
