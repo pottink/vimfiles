@@ -4,8 +4,12 @@ let mapleader=","
 
 " Plugins
 call plug#begin()
+    Plug 'airblade/vim-gitgutter'
     Plug 'morhetz/gruvbox'
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    Plug 'phpactor/phpactor', {'for': 'php', 'tag': '*', 'do': 'composer install --no-dev -o'}
     Plug 'preservim/nerdtree'
+    Plug 'tpope/vim-fugitive'
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
 call plug#end()
@@ -39,6 +43,8 @@ set history=1000
 set incsearch
 set mouse=a
 set noswapfile
+set noshowmode
+set nowrap
 set number
 set nrformats=
 set secure
@@ -49,11 +55,11 @@ set softtabstop=4
 set tabstop=4
 set ttyfast
 set wildmenu
-set wildmode=longest,full
+set wildmode=longest:full,full
 
 " Plugin config
 let g:airline#extensions#tabline#enabled=1
-let g:airline#extensions#tabline#enabled=1
+let g:airline#extensions#tabline#formatter='unique_tail'
 let g:airline_detect_modified=1
 let g:airline_powerline_fonts=1
 let g:airline_statusline_onbottom=1
@@ -82,3 +88,6 @@ if has("autocmd")
     " Specify some indenting options
     au FileType gitcommit set nosmartindent
 endif
+
+" Key mappings
+inoremap <silent><expr> <TAB> coc#pum#visible() ? coc#pum#confirm() : "<TAB>"
